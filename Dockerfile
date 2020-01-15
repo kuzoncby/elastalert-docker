@@ -55,7 +55,7 @@ WORKDIR /opt
 # Install software required for Elastalert and NTP for time synchronization.
 RUN apk update && \
     apk upgrade && \
-    apk add ca-certificates openssl-dev openssl libffi-dev python3 python3-dev py3-yaml gcc musl-dev tzdata openntpd && \
+    apk add ca-certificates openssl-dev openssl libffi-dev python3 python3-dev py3-yaml gcc musl-dev tzdata openntpd curl && \
     # Download and unpack Elastalert.
     curl "${ELASTALERT_URL}" | tar xvz -C /opt/ --exclude="*.cmd" --exclude="docs" --exclude="example" && \
     mv /opt/elastalert-0.2.1 "${ELASTALERT_HOME}"
