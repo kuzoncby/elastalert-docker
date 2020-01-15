@@ -26,7 +26,7 @@ ENV SET_CONTAINER_TIMEZONE False
 # Default container timezone as found under the directory /usr/share/zoneinfo/.
 ENV CONTAINER_TIMEZONE UTC
 # URL from which to download Elastalert.
-ENV ELASTALERT_URL https://github.com/Yelp/elastalert/archive/v0.2.1.tar.gz
+ENV ELASTALERT_URL https://codeload.github.com/Yelp/elastalert/tar.gz/v0.2.1
 # Directory holding configuration for Elastalert and Supervisor.
 ENV CONFIG_DIR /opt/config
 # Elastalert rules directory.
@@ -50,7 +50,8 @@ ENV ELASTICSEARCH_TLS_VERIFY True
 # ElastAlert writeback index
 ENV ELASTALERT_INDEX elastalert_status
 
-WORKDIR /opt
+# Copy the script used to launch the Elastalert when a container is started.
+COPY . /opt/
 
 # Install software required for Elastalert and NTP for time synchronization.
 RUN apk update && \
@@ -58,12 +59,9 @@ RUN apk update && \
     apk add ca-certificates openssl-dev openssl libffi-dev python3 python3-dev py3-yaml gcc musl-dev tzdata openntpd curl && \
     # Download and unpack Elastalert.
     curl "${ELASTALERT_URL}" | tar xvz -C /opt/ --exclude="*.cmd" --exclude="docs" --exclude="example" && \
-    mv /opt/elastalert-0.2.1 "${ELASTALERT_HOME}"
-
-WORKDIR "${ELASTALERT_HOME}"
-
-# Install Elastalert.
-RUN python3 setup.py install && \
+    mv elastalert-0.2.1 "${ELASTALERT_HOME}" && \
+    cd "${ELASTALERT_HOME}" && \
+    python3 setup.py install && \
     pip3 install -e . && \
     pip3 uninstall twilio --yes && \
     pip3 install twilio==6.0.0 && \
@@ -83,12 +81,12 @@ RUN python3 setup.py install && \
     apk del gcc && \
     apk del openssl-dev && \
     apk del libffi-dev && \
-    rm -rf /var/cache/apk/*
+    rm -rf /var/cache/apk/* && \
 
-# Copy the script used to launch the Elastalert when a container is started.
-COPY ./start-elastalert.sh /opt/
-# Make the start-script executable.
-RUN chmod +x /opt/start-elastalert.sh
+    # Make the start-script executable.
+    chmod +x /opt/start-elastalert.sh
+
+WORKDIR "${ELASTALERT_HOME}"
 
 # Define mount points.
 VOLUME [ "${CONFIG_DIR}", "${RULES_DIRECTORY}", "${LOG_DIR}"]
