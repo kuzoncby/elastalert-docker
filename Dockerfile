@@ -59,7 +59,7 @@ RUN apk update && \
     apk add ca-certificates openssl-dev openssl libffi-dev python3 python3-dev py3-yaml gcc musl-dev tzdata openntpd curl && \
     # Download and unpack Elastalert.
     curl "${ELASTALERT_URL}" | tar xvz -C /opt/ --exclude="*.cmd" --exclude="docs" --exclude="example" && \
-    mv elastalert-0.2.1 "${ELASTALERT_HOME}" && \
+    mv /opt/elastalert-0.2.1 "${ELASTALERT_HOME}" && \
     cd "${ELASTALERT_HOME}" && \
     python3 setup.py install && \
     pip3 install -e . && \
