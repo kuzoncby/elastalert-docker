@@ -3,7 +3,7 @@ This repository is no longer maintained! Changes to this repository will not res
 I suggest anyone interested in further developing this Docker image to fork this repository and create your own Docker image (on DockerHub).
 Thanks for your interest!
 
-# Elastalert Docker Image
+= Elastalert Docker Image
 
 Docker image with Elastalert on Alpine Linux.
 
@@ -13,19 +13,21 @@ In addition you may want to add the SYS_NICE capability, in order for ntpd to be
 
 If Elasticsearch requires authentication, then the two environment variables listed below must contain user and password.
 In addition, if you mount the Elastalert configuration file you must add login credentials, like in this example:
-```
+
+[source,yaml]
+----
 es_username: elastic
 es_password: changeme
-```
+----
 
-# Volumes
+= Volumes
 
 - /opt/logs       - Elastalert and Supervisord logs will be written to this directory.
 - /opt/config     - Elastalert (elastalert_config.yaml) and Supervisord (elastalert_supervisord.conf) configuration files.
 - /opt/rules      - Contains Elastalert rules.
 
 
-# Environment
+= Environment
 
 - SET_CONTAINER_TIMEZONE - Set to "True" (without quotes) to set the timezone when starting a container. Default is `False`.
 - CONTAINER_TIMEZONE - Timezone to use in container. Default is `Europe/Stockholm`.

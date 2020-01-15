@@ -1,6 +1,7 @@
 #!/bin/sh
 
 # Copyright 2015-2017 Ivan Krizsan
+# Copyright 2020 Kuzon Chen
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -80,7 +81,7 @@ if [ ! -f ${ELASTALERT_SUPERVISOR_CONF} ]; then
     # Redirect Supervisor stderr output to a file in the designated logs directory.
     sed -i -e"s|stderr_logfile=.*log|stderr_logfile=${LOG_DIR}/elastalert_stderr.log|g" "${ELASTALERT_SUPERVISOR_CONF}"
     # Modify the start-command.
-    sed -i -e"s|python elastalert.py|elastalert --config ${ELASTALERT_CONFIG}|g" "${ELASTALERT_SUPERVISOR_CONF}"
+    sed -i -e"s|python3 elastalert.py|elastalert --config ${ELASTALERT_CONFIG}|g" "${ELASTALERT_SUPERVISOR_CONF}"
 fi
 
 # Set authentication if needed
