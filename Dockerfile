@@ -57,6 +57,8 @@ COPY . /opt/
 RUN apk update && \
     apk upgrade && \
     apk add ca-certificates openssl-dev openssl libffi-dev python3 python3-dev py3-yaml gcc musl-dev tzdata openntpd curl && \
+    ln -s /usr/bin/python3 /bin/python && \
+    ln -s /usr/bin/pip3 /bin/pip && \
     # Download and unpack Elastalert.
     curl "${ELASTALERT_URL}" | tar xvz -C /opt/ --exclude="*.cmd" --exclude="docs" --exclude="example" && \
     mv /opt/elastalert-0.2.1 "${ELASTALERT_HOME}" && \
