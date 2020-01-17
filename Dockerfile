@@ -54,7 +54,7 @@ WORKDIR /opt
 COPY . /opt/
 
 # Install Elastalert.
-RUN yum install python36 python36-pip python36-devel make gcc-c++ && \
+RUN yum install python36 python36-pip python36-devel make gcc-c++ -y && \
     python3.6 -m pip install pip --upgrade && \
     pip install "elastalert==0.2.1" && \
     mkdir -p "${CONFIG_DIR}" && \

@@ -1,0 +1,9 @@
+= Contributing
+
+Install the following software:
+
+. Docker
+. Docker Compose
+. IDE you prefer
+.. Asciidoc Extension
+.. PlantUML Extension

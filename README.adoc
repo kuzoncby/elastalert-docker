@@ -2,6 +2,8 @@
 
 Docker image with Elastalert on CentOS 7.
 
+link:README-zh.adoc[简体中文]
+
 == Volumes
 
 - /opt/logs       - Elastalert logs will be written to this directory.

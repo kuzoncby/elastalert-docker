@@ -2,6 +2,8 @@
 
 使用 CentOS 7 的 Elastalert Docker 镜像。
 
+link:README.adoc[English]
+
 == 存储卷
 
 - /opt/logs       - Elastalert 日志将被写入此目录。
