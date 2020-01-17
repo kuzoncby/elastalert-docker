@@ -1,0 +1,22 @@
+rules_folder: /opt/rules
+
+run_every:
+  minutes: 1
+
+buffer_time:
+  minutes: 15
+
+es_host: 192.1.52.73
+es_port: 9200
+
+writeback_index: elastalert_status
+writeback_alias: elastalert_alerts
+
+alert_time_limit:
+  days: 0
+
+smtp_host: "smtp.example.com" # <1>
+smtp_port: 465 # <2>
+smtp_ssl: true
+from_addr: "noreply@example.com" # <3>
+smtp_auth_file: "/opt/config/auth.txt" # <4>

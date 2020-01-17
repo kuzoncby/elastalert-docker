@@ -13,10 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Elastalert Docker image running on Alpine Linux.
-# Build image with: docker build -t ivankrizsan/elastalert:latest .
+# Build image with: docker-compose build --no-cache .
 
-FROM docker.io/library/alpine:3
+FROM docker.io/library/centos:7
 
 LABEL maintainer="Ivan Krizsan, https://github.com/krizsan"
 LABEL maintainer="Kuzon Chen, https://github.com/kuzoncby"
@@ -50,48 +49,22 @@ ENV ELASTICSEARCH_TLS_VERIFY True
 # ElastAlert writeback index
 ENV ELASTALERT_INDEX elastalert_status
 
+WORKDIR /opt
 # Copy the script used to launch the Elastalert when a container is started.
 COPY . /opt/
 
-# Install software required for Elastalert and NTP for time synchronization.
-RUN apk update && \
-    apk upgrade && \
-    apk add ca-certificates openssl-dev openssl libffi-dev python3 python3-dev py3-yaml gcc musl-dev tzdata openntpd curl && \
-    ln -s /usr/bin/python3 /bin/python && \
-    ln -s /usr/bin/pip3 /bin/pip && \
-    # Download and unpack Elastalert.
-    curl "${ELASTALERT_URL}" | tar xvz -C /opt/ --exclude="*.cmd" --exclude="docs" --exclude="example" && \
-    mv /opt/elastalert-0.2.1 "${ELASTALERT_HOME}" && \
-    cd "${ELASTALERT_HOME}" && \
-    python3 setup.py install && \
-    pip3 install -e . && \
-    pip3 uninstall twilio --yes && \
-    pip3 install twilio==6.0.0 && \
-
-    # Install Supervisor.
-    easy_install supervisor && \
-
-    # Create directories. The /var/empty directory is used by openntpd.
+# Install Elastalert.
+RUN yum install python36 python36-pip python36-devel make gcc-c++ && \
+    python3.6 -m pip install pip --upgrade && \
+    pip install "elastalert==0.2.1" && \
     mkdir -p "${CONFIG_DIR}" && \
     mkdir -p "${RULES_DIRECTORY}" && \
     mkdir -p "${LOG_DIR}" && \
     mkdir -p /var/empty && \
-
-    # Clean up.
-    apk del python3-dev && \
-    apk del musl-dev && \
-    apk del gcc && \
-    apk del openssl-dev && \
-    apk del libffi-dev && \
-    rm -rf /var/cache/apk/* && \
-
-    # Make the start-script executable.
     chmod +x /opt/start-elastalert.sh
-
-WORKDIR "${ELASTALERT_HOME}"
 
 # Define mount points.
 VOLUME [ "${CONFIG_DIR}", "${RULES_DIRECTORY}", "${LOG_DIR}"]
 
 # Launch Elastalert when a container is started.
-CMD ["/opt/start-elastalert.sh"]
+CMD ["bash", "/opt/start-elastalert.sh"]

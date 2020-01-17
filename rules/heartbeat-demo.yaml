@@ -1,0 +1,16 @@
+es_host: 192.1.52.73
+es_port: 9200
+name: Heartbeat down
+type: frequency
+index: heartbeat-*
+num_events: 0
+timeframe:
+  minutes: 1
+filter:
+  - term:
+      "monitor.status": "down" # <1>
+alert:
+  - "email"
+email:
+  - "admin@example.com"
+  - "alert@example.com"

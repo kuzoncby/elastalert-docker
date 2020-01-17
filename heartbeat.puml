@@ -1,0 +1,30 @@
+@startuml Heartbeat
+
+rectangle "Server Cluster" {
+    node "Database Server" as dbs
+    node "APP Server" as apps
+    component "Heartbeat Server" as heartbeat
+
+    frame "Elasticsearch" as es {
+        database "Heartbeat Index" as index
+    }
+
+    heartbeat ..> dbs: ICMP
+    heartbeat ..> apps: HTTP
+    heartbeat -> index
+}
+
+rectangle "Alert" {
+    component "Elastalert" as alert
+
+    alert ..> index: Query Heartbeat Index
+
+    component "Mail Server" as mail
+
+    alert -> mail: Send mail via SMTP
+
+    actor "System Admin" as admin
+
+    mail -> admin: Alert Mail
+}
+@enduml

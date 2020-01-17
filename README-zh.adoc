@@ -1,0 +1,68 @@
+= Elastalert Docker 镜像
+
+使用 CentOS 7 的 Elastalert Docker 镜像。
+
+== 存储卷
+
+- /opt/logs       - Elastalert 日志将被写入此目录。
+- /opt/config     - Elastalert (elastalert_config.yaml) 以及邮件服务器认证配置文件。
+- /opt/rules      - Elastalert 规则配置文件。
+
+== 构建
+
+[source,bash]
+----
+docker-compose build --no-cache
+----
+
+== 运行
+
+克隆这个项目，修改 Elastalert 配置：
+
+.config/elastalert_config.yaml
+[source,yaml]
+----
+include::config/elastalert_config.yaml[Elastalert Config]
+----
+<1> 邮件服务器地址
+<2> 邮件服务器端口
+<3> 发送邮件账户
+<4> 邮件认证配置
+
+修改邮件认证配置：
+
+.config/auth.txt
+[source,ini]
+----
+include::config/auth.txt[Auth Config]
+----
+
+设置报警规则，以 Heartbeat 为例：
+
+.Heartbeat 案例
+[plantuml,diagram-heartbeat,svg]
+----
+include::heartbeat.puml[Heartbeat]
+----
+
+首先通过 Heartbeat 监控需要的设备，Heartbeat 会将这些设备的数据传输到 ES 中进行存储。有关此部分的配置请查看：link:https://www.elastic.co/guide/en/beats/heartbeat/current/configuring-howto-heartbeat.html[]
+
+Elastalert 定期检索 Heartbeat 中故障的服务，并向管理员发送邮件。服务全部正常不会发送。
+
+配置文件：
+
+.rules/heartbeat-demo.yaml
+[source,yaml]
+----
+include::rules/heartbeat-demo.yaml[Rule]
+----
+<1> 读取 Heartbeat 中故障的服务
+
+
+全部设置完成后执行以下操作启动：
+
+.bash
+[source,bash]
+----
+docker-compose up -d
+----

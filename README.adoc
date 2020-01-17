@@ -1,40 +1,66 @@
-Note!
-This repository is no longer maintained! Changes to this repository will not result in the build of a new image on DockerHub.
-I suggest anyone interested in further developing this Docker image to fork this repository and create your own Docker image (on DockerHub).
-Thanks for your interest!
-
 = Elastalert Docker Image
 
-Docker image with Elastalert on Alpine Linux.
+Docker image with Elastalert on CentOS 7.
 
-Assumes the use of port 9200 when communicating with Elasticsearch.
-In order for the time of the container to be synchronized (ntpd), it must be run with the SYS_TIME capability.
-In addition you may want to add the SYS_NICE capability, in order for ntpd to be able to modify its priority.
+== Volumes
 
-If Elasticsearch requires authentication, then the two environment variables listed below must contain user and password.
-In addition, if you mount the Elastalert configuration file you must add login credentials, like in this example:
-
-[source,yaml]
-----
-es_username: elastic
-es_password: changeme
-----
-
-= Volumes
-
-- /opt/logs       - Elastalert and Supervisord logs will be written to this directory.
-- /opt/config     - Elastalert (elastalert_config.yaml) and Supervisord (elastalert_supervisord.conf) configuration files.
+- /opt/logs       - Elastalert logs will be written to this directory.
+- /opt/config     - Elastalert (elastalert_config.yaml) and the configuration file for mail server authentication.
 - /opt/rules      - Contains Elastalert rules.
 
+== Build Image
 
-= Environment
+[source,bash]
+----
+docker-compose build --no-cache
+----
 
-- SET_CONTAINER_TIMEZONE - Set to "True" (without quotes) to set the timezone when starting a container. Default is `False`.
-- CONTAINER_TIMEZONE - Timezone to use in container. Default is `Europe/Stockholm`.
-- ELASTICSEARCH_HOST - IP or hostname for your Elasticsearch host. Defaults to `elasticsearchhost`.
-- ELASTICSEARCH_PORT - Port for your Elasticsearch host. Defaults to `9200`.
-- ELASTICSEARCH_USER - Name of user to log into Ealsticsearch with. Leave undefined for no authentication.
-- ELASTICSEARCH_PASSWORD - Password to log into Elasticsearch with. Leave undefined for no authentication.
-- ELASTICSEARCH_TLS - Use HTTPS when connecting to Elasticsearch (True/False). Default is `False`.
-- ELASTICSEARCH_TLS_VERIFY - Verify server (Elasticsearch) certificate (True/False). Default is `False`.
-- ELASTALERT_INDEX - Name of Elastalert writeback index in Elasticseach. Defaults to `elastalert_status`.
+== Run Elastalert
+
+Clone this project and modify Elastalert configuration file:
+
+.config/elastalert_config.yaml
+[source,yaml]
+----
+include::config/elastalert_config.yaml[Elastalert Config]
+----
+<1> SMTP server
+<2> SMTP port
+<3> Mail address
+<4> Authentication configuration
+
+Modify authentication configuration:
+
+.config/auth.txt
+[source,ini]
+----
+include::config/auth.txt[Auth Config]
+----
+
+Set up alarm rules, using Heartbeat as an example:
+
+.Heartbeat
+[plantuml,diagram-heartbeat,svg]
+----
+include::heartbeat.puml[Heartbeat]
+----
+
+First, monitor the required devices through Heartbeat, and Heartbeat will transfer the data of these devices to the ES for storage. To learn more about Heartbeat please refer: link:https://www.elastic.co/guide/en/beats/heartbeat/current/configuring-howto-heartbeat.html[]
+
+Elastalert regularly checks for faulty services in Heartbeat and sends emails to administrators. All services are normal and will not be sent.
+
+.rules/heartbeat-demo.yaml
+[source,yaml]
+----
+include::rules/heartbeat-demo.yaml[Rule]
+----
+<1> Checks for faulty services in Heartbeat
+
+
+After all settings are completed, perform the following operations to start:
+
+.bash
+[source,bash]
+----
+docker-compose up -d
+----

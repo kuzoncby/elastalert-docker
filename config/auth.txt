@@ -1,0 +1,2 @@
+user: noreply@example.com
+password: secret
